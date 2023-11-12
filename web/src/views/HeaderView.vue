@@ -13,7 +13,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="@/assets/test.jpg" class="user-avatar" />
+          <img src="@/assets/avatar.jpg" class="user-avatar" />
           <el-icon class="el-icon-caret-bottom"><CaretBottom /></el-icon>
         </div>
 
