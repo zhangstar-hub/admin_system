@@ -6,10 +6,14 @@
     >
       <SideView></SideView>
     </el-aside>
-    <el-container class="main-container">
+    <el-container
+      class="main-container"
+      :style="{ paddingLeft: store.getters['menu/sidebarWidth'] }"
+    >
       <el-header>
         <HeaderView></HeaderView>
       </el-header>
+      <MenuHistory></MenuHistory>
       <el-main>
         <router-view></router-view>
       </el-main>
@@ -20,6 +24,7 @@
 <script setup>
 import SideView from "@/views/SideView";
 import HeaderView from "@/views/HeaderView";
+import MenuHistory from "@/components/MenuHistory";
 import store from "@/store";
 </script>
 
@@ -28,7 +33,16 @@ import store from "@/store";
   .el-header {
     padding: 0;
     margin: 0;
-    overflow-x: hidden;
+    height: 55px;
+  }
+  .asider-container {
+    position: fixed;
+  }
+  .main-container {
+    min-height: calc(100vh + 60px);
+  }
+  .el-main {
+    padding-top: 8px;
   }
 }
 </style>

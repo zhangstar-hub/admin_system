@@ -8,7 +8,12 @@
     <div>
       <TableTools>
         <template #toolar>
-          <el-button type="primary" plain @click="createUserModal()">
+          <el-button
+            type="primary"
+            plain
+            @click="createUserModal()"
+            v-permControl="'user_post'"
+          >
             新建
           </el-button>
         </template>
@@ -16,7 +21,7 @@
       <el-table ref="tableRef" row-key="id" :data="tableData">
         <el-table-column prop="username" label="账号" column-key="username" />
         <el-table-column prop="name" label="拥有者" column-key="name" />
-        <el-table-column prop="is_active" label="是否禁用">
+        <el-table-column prop="is_active" label="开通">
           <template #default="scope">
             <el-tag v-if="scope.row.is_active">已激活 </el-tag>
             <el-tag v-else type="danger">未激活 </el-tag>
@@ -43,6 +48,7 @@
               type="primary"
               size="small"
               @click.prevent="updateUserModal(scope.row)"
+              v-permControl="'user_put'"
             >
               编辑
             </el-button>
@@ -51,6 +57,7 @@
               type="primary"
               size="small"
               @click.prevent="deleteUser(scope.$index, scope.row)"
+              v-permControl="'user_delete'"
             >
               删除
             </el-button>
@@ -94,7 +101,7 @@
       <el-form-item label="拥有者:" prop="name">
         <el-input v-model="form.name" placeholder="张三" />
       </el-form-item>
-      <el-form-item label="是否禁用:" prop="is_active">
+      <el-form-item label="开通:" prop="is_active">
         <el-switch v-model="form.is_active" />
       </el-form-item>
       <el-form-item label="角色:" prop="roles">
@@ -192,6 +199,7 @@ function createUserModal() {
   form.permissions = [];
   form.new_permissions = [];
   form.disabled_permission = [];
+  lockPassword.value = false;
   dialogFormVisible.value = true;
 }
 
@@ -206,6 +214,7 @@ function updateUserModal(row) {
   form.permissions = row.permissions;
   form.new_permissions = JSON.parse(JSON.stringify(row.permissions));
   form.disabled_permission = row.disabled_permission;
+  lockPassword.value = true;
   dialogFormVisible.value = true;
 }
 

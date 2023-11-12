@@ -7,7 +7,12 @@
     </template>
     <TableTools>
       <template #toolar>
-        <el-button type="primary" plain @click="createRoleModal()">
+        <el-button
+          type="primary"
+          plain
+          @click="createRoleModal()"
+          v-permControl="'role_post'"
+        >
           新建
         </el-button>
       </template>
@@ -27,6 +32,7 @@
             type="primary"
             size="small"
             @click.prevent="updateRoleModal(scope.row)"
+            v-permControl="'role_put'"
           >
             编辑
           </el-button>
@@ -35,6 +41,7 @@
             type="primary"
             size="small"
             @click.prevent="deleteRole(scope.$index, scope.row)"
+            v-permControl="'role_delete'"
           >
             删除
           </el-button>

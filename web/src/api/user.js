@@ -100,14 +100,14 @@ export default {
     test: function () {
         http.get('/oauth/test', {})
     },
-
+    
     routerName: function () {
         return http.get('/oauth/router_name/', {})
     },
 
     // 获取角色个人信息
-    getUserPersonal: function (user_id) {
-        return http.get(`/oauth/user_personal/${user_id}/combo_info/`, {})
+    getUserPersonal: function () {
+        return http.get(`/oauth/user_personal/combo_info/`, {})
     },
 
 }

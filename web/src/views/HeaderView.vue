@@ -10,7 +10,6 @@
         <Fold v-else />
       </el-icon>
     </div>
-
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
@@ -20,8 +19,7 @@
 
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item> Action 2 </el-dropdown-item>
+            <el-dropdown-item @click="logout">退出登陆</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -29,16 +27,22 @@
   </div>
 </template>
 <script setup>
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+
 const store = useStore();
+const router = useRouter();
+
+function logout() {
+  store.commit("user/clearAll");
+  router.push({ name: "login" });
+}
 </script>
 
 <style lang="scss" scoped>
 .navbar {
   background: rgba(255, 255, 255, 0.3);
   height: 50px;
-  overflow: hidden;
-  position: relative;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .left-menu {
@@ -51,6 +55,9 @@ const store = useStore();
   }
 
   .right-menu {
+    height: 50px;
+    display: flex;
+    align-items: center;
     float: right;
     height: 100%;
     line-height: 50px;
@@ -58,8 +65,8 @@ const store = useStore();
     cursor: pointer;
 
     .avatar-container {
-      margin-top: 5px;
       margin-right: 30px;
+
       .avatar-wrapper {
         .user-avatar {
           width: 40px;

@@ -7,7 +7,12 @@
     </template>
     <TableTools>
       <template #toolar>
-        <el-button type="primary" plain @click="createPermissionModal">
+        <el-button
+          type="primary"
+          plain
+          @click="createPermissionModal"
+          v-permControl="'permission_post'"
+        >
           新建
         </el-button>
       </template>
@@ -19,7 +24,7 @@
           {{ utils.method_alias(scope.row.method) }}
         </template>
       </el-table-column>
-      <el-table-column prop="menus" label="对应菜单">
+      <el-table-column prop="menus" label="菜单ID">
         <template #default="scope">
           {{ menus_formatter(scope.row.menus) }}
         </template>
@@ -32,6 +37,7 @@
             type="primary"
             size="small"
             @click.prevent="updatePermissionModal(scope.row)"
+            v-permControl="'permission_put'"
           >
             编辑
           </el-button>
@@ -40,6 +46,7 @@
             type="primary"
             size="small"
             @click.prevent="deletePermission(scope.$index, scope.row)"
+            v-permControl="'permission_delete'"
           >
             删除
           </el-button>
@@ -71,7 +78,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="操作权限:" prop="method">
-        <el-select v-model="form.method" placeholder="必选项">
+        <el-select v-model="form.methods" placeholder="必选项" multiple>
           <el-option value="GET" label="查看(GET)">查看(GET)</el-option>
           <el-option value="POST" label="新增(POST)">新增(POST)</el-option>
           <el-option value="PUT" label="修改(PUT)">修改(PUT)</el-option>
@@ -80,7 +87,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="对应菜单:" prop="menus">
+      <el-form-item label="菜单ID:" prop="menus">
         <el-select
           v-model="form.menus"
           placeholder="可选项"
@@ -137,7 +144,6 @@ const routerNames = reactive([]);
 onMounted(() => {
   userApi.getComboPermissions().then(({ data }) => {
     let { permissions, menus, router_names } = { ...data };
-    console.log(permissions, menus, router_names);
     tableData.splice(0);
     tableData.push(...permissions);
     allMenus.splice(0);
@@ -152,7 +158,7 @@ const form = reactive({
   id: "",
   name: "",
   methods: [],
-  menus: "",
+  menus: [],
   desc: "",
 });
 
@@ -161,7 +167,7 @@ function createPermissionModal() {
   form.id = "";
   form.name = "";
   form.methods = ["GET"];
-  form.menus = "";
+  form.menus = [];
   form.desc = "";
   dialogFormVisible.value = true;
 }
@@ -174,6 +180,14 @@ function updatePermissionModal(row) {
   form.menus = row.menus;
   form.desc = row.desc;
   dialogFormVisible.value = true;
+}
+
+// 刷新权限数据
+function refreshPermission() {
+  userApi.getPermission().then(({ data }) => {
+    tableData.splice(0);
+    tableData.push(...data);
+  });
 }
 
 // 删除权限
@@ -194,20 +208,24 @@ function deletePermission(index, row) {
 
 // 保存权限
 function savePermission() {
+  if (form.methods.length <= 0) {
+    ElMessage.error("操作权限至少选中一个！");
+    return;
+  }
   if (form.id) {
-    userApi.updatePermission(form.id, form).then(({ data }) => {
-      for (let index = 0; index < tableData.length; index++) {
-        if (tableData[index].id == data.id) {
-          tableData[index] = data;
-          break;
-        }
-      }
+    if (form.methods.length !== 1) {
+      ElMessage.error("只能选择一个操作权限进行更新！");
+      return;
+    }
+    let t_form = { ...form, method: form.methods[0] };
+    userApi.updatePermission(t_form.id, t_form).then(() => {
+      refreshPermission();
       ElMessage.success("权限更新成功");
       dialogFormVisible.value = false;
     });
   } else {
     userApi.createPermission(form).then(({ data }) => {
-      tableData.push(data);
+      tableData.push(...data);
       ElMessage.success("权限创建成功");
       dialogFormVisible.value = false;
     });

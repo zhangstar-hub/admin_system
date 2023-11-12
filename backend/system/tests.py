@@ -1,5 +1,3 @@
-def a():
-    yield 1
+class A:
+    pass
 
-
-print(a())

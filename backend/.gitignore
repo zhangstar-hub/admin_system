@@ -1,0 +1,8 @@
+env
+tmp/*
+logs/*
+*/migrations/*
+.idea
+*pyc
+*.db
+*.sqlite3

@@ -37,17 +37,21 @@ function onSubmit() {
     return;
   }
 
-  userApi.login(form.username, form.password).then(function ({ data }) {
-    let { token, user_data } = { ...data };
-    store.commit("user/setToken", token);
-    store.commit("user/setUserData", user_data);
-    router.push({ name: "home" });
-    userApi.getUserPersonal(data.user_data.id).then(({ data }) => {
-      let { menus, permissions } = { ...data };
-      store.commit("user/setMenus", menus);
-      store.commit("user/setPermissions", permissions);
+  userApi
+    .login(form.username, form.password)
+    .then(function ({ data, headers }) {
+      let { token } = { ...data };
+      store.commit("user/setToken", token);
+      store.commit("user/setPermUpdateTS", headers["perm-update-ts"]);
+      router.push({ name: "home" });
+
+      userApi.getUserPersonal().then(({ data }) => {
+        let { menus, user_data, permissions } = { ...data };
+        store.commit("user/setMenus", menus);
+        store.commit("user/setUserData", user_data);
+        store.commit("user/setPermissions", permissions);
+      });
     });
-  });
 }
 </script>
 

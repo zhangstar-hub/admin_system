@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import datetime
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-*7$^qcw&_x8few2afnnca6q1x131#xkvw5xyg=uaty_!l9rbi+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
 
 
 # Application definition
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
     'system',
     'rest_framework',
     'rest_framework.authtoken',
-    'drf_yasg',
+    # 'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'system.middleware.exception_handle.ExceptionHandlerMiddleware'
+    'system.middleware.exception.ExceptionHandlerMiddleware',
+    'system.middleware.permission.PermissionMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -120,7 +122,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, '/static/'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -131,7 +137,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'system.permission.VisitorPermission',
+    ],
     'EXCEPTION_HANDLER': 'utils.exception_handler.custom_exception_handler',
 }
 AUTH_USER_MODEL = 'system.User'
 
+# 权限更新时间标记，权限更新时需要更新前端展示
+PERM_UPDATE_TS = datetime.datetime.now()

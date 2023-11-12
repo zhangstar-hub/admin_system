@@ -1,7 +1,8 @@
 <template>
   <el-menu
     class="sidebar"
-    :default-active="router.name"
+    :default-active="router.currentRoute.value.name"
+    :unique-opened="true"
     active-text-color="#ffd04b"
     background-color="#333333"
     text-color="#fff"
@@ -14,7 +15,7 @@
       <h2 v-else>后台管理系统</h2>
     </el-menu-item>
     <el-sub-menu
-      :index="index.toString()"
+      :index="item.name"
       v-for="(item, index) of menuList"
       :key="index"
     >
@@ -33,48 +34,57 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, watch, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 const store = useStore();
 const router = useRouter();
+
 onMounted(() => {
-  console.log(store.state.user.menus);
-  let routers = initRouters(store.state.user.menus);
-  console.log(routers);
+  let routers = initRouters();
   store.commit("menu/updateRouters", routers);
 });
 
-function initRouters(menus) {
-  let controllableRouters = router
-    .getRoutes()
-    .find((route) => route.name === "main").children;
+watch(
+  () => store.state.user.permissions,
+  () => {
+    let routers = initRouters();
+    store.commit("menu/updateRouters", routers);
+  }
+);
+
+function initRouters() {
+  let controllableRouters = JSON.parse(
+    JSON.stringify(
+      router.getRoutes().find((route) => route.name === "main").children
+    )
+  );
   const routers = [];
-  for (const router of controllableRouters) {
-    if (router.meta && router.meta.isShow === false) {
+  for (const route of controllableRouters) {
+    if (route.meta && route.meta.isShow === false) {
       continue;
     }
-    let menu = menus.find((x) => x.name == router.name);
+    let menu = store.state.user.menus.find((x) => x.name == route.name);
     if (!menu) {
       continue;
     }
-    routers.push(router);
-    router.meta = router.meta || {};
-    router.meta.title = menu.title;
-    router.meta.permissions = menu.permissions;
+    routers.push(route);
+    route.meta = route.meta || {};
+    route.meta.title = menu.title;
+    route.meta.permissions = menu.permissions;
     let children = [];
-    for (const c_router of router.children) {
-      let c_menu = menu.children.find((x) => x.name == c_router.name);
+    for (const c_route of route.children) {
+      let c_menu = menu.children.find((x) => x.name == c_route.name);
       if (!c_menu) {
         continue;
       }
-      c_router.meta = c_router.meta || {};
-      c_router.meta.title = c_menu.title;
-      c_router.meta.permission = c_menu.permission;
-      children.push(c_router);
+      c_route.meta = c_route.meta || {};
+      c_route.meta.title = c_menu.title;
+      c_route.meta.permission = c_menu.permission;
+      children.push(c_route);
     }
-    router.children = children;
+    route.children = children;
   }
   return routers;
 }

@@ -7,7 +7,12 @@
     </template>
     <TableTools>
       <template #toolar>
-        <el-button type="primary" plain @click="createMenuModal()">
+        <el-button
+          type="primary"
+          plain
+          @click="createMenuModal()"
+          v-permControl="'menu_post'"
+        >
           新建
         </el-button>
       </template>
@@ -23,6 +28,7 @@
             size="small"
             v-show="scope.row.pid == undefined"
             @click.prevent="createMenuModal(scope.row.id, scope.row)"
+            v-permControl="'menu_post'"
           >
             新建子菜单
           </el-button>
@@ -31,6 +37,7 @@
             type="primary"
             size="small"
             @click.prevent="updateMenuModal(scope.row)"
+            v-permControl="'menu_put'"
           >
             编辑
           </el-button>
@@ -39,6 +46,7 @@
             type="primary"
             size="small"
             @click.prevent="deleteMenu(scope.$index, scope.row)"
+            v-permControl="'menu_delete'"
           >
             删除
           </el-button>

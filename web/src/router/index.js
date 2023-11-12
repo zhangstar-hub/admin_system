@@ -1,10 +1,14 @@
+import store from '@/store';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/login',
     name: 'login',
-    component: ()=>import('@/views/LoginView'),
+    component: () => import('@/views/LoginView'),
+    meta: {
+      noAuth: true
+    }
   },
   {
     path: '/',
@@ -15,7 +19,7 @@ const routes = [
         path: 'home',
         name: 'home',
         component: () => import('@/views/HomeView'),
-        meta: {'isShow': false}
+        meta: { 'isShow': false }
       },
       {
         path: '/',
@@ -25,23 +29,40 @@ const routes = [
           {
             path: 'user',
             name: 'user',
-            component: ()=>import('@/views/admin/UserView'),
+            component: () => import('@/views/admin/UserView'),
           },
           {
             path: 'role',
             name: 'role',
-            component: ()=>import('@/views/admin/RoleView'),
+            component: () => import('@/views/admin/RoleView'),
           },
           {
             path: 'permission',
             name: 'permission',
-            component: ()=>import('@/views/admin/PermissionView'),
+            component: () => import('@/views/admin/PermissionView'),
           },
           {
             path: 'menu',
             name: 'menu',
-            component: ()=>import('@/views/admin/MenuView'),
+            component: () => import('@/views/admin/MenuView'),
           },
+        ]
+      },
+      {
+        path: '/',
+        name: 'monitor',
+        icon: 'TrendCharts',
+        children: [
+          {
+            path: 'smsMonitor',
+            name: 'smsMonitor',
+            component: () => import('@/views/monitor/SmsMonitorView'),
+          },
+          {
+            path: 'smsSender',
+            name: 'smsSender',
+            component: () => import('@/views/monitor/SmsSenderView'),
+          }
         ]
       },
       {
@@ -98,7 +119,13 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  next()
+  const token = localStorage.getItem('token') || null;
+  if (!token && !to.meta.noAuth) {
+    next({name: 'login'});
+  } else {
+    store.commit('menu/updateMenuHistroy', to)
+    next()
+  }
 })
 
 

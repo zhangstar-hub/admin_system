@@ -73,8 +73,8 @@ onMounted(() => {
     allPermissions.splice(0);
     allPermissions.push(...p);
     showedPermissions.value = p;
-
     filterPermission();
+    emits("synPer", props.defaultPermissions);
   });
 });
 
@@ -105,7 +105,6 @@ function filterPermission() {
 
 // 同步树权限数据到store
 function synPermissions() {
-  console.log(synPermissions);
   let permissions = permTreeRef.value.getCheckedKeys().filter((item) => {
     return item;
   });

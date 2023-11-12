@@ -5,12 +5,13 @@ import router from "@/router";
 
 const http = axios.create({
   baseURL: '/api',
-  timeout: 1000                   //请求超时设置，单位ms
+  timeout: 10000                   //请求超时设置，单位ms
 })
 
 http.interceptors.request.use(
   function (config) {  
     config.headers.AUTHORIZATION = 'token ' + store.state.user.token;
+    config.headers['PERM-UPDATE-TS'] = store.state.user.permUpdateTS;
     return config;
   },
   function (error) {
@@ -19,12 +20,24 @@ http.interceptors.request.use(
 );
 
 http.interceptors.response.use(
-  function (response) {return response},
+  function (response) {
+    let perm_udpate_ts = response.headers['perm-update-ts'];
+    if (perm_udpate_ts && perm_udpate_ts > store.state.user.permUpdateTS) {
+      store.commit('user/setPermUpdateTS', perm_udpate_ts);
+      store.dispatch('user/refreshPermissions');
+    }
+    return response
+  },
   function (error) {
     console.log(error);
     let err_message = error.response.data.detail;
     for (const m of err_message) {
         ElMessage.error(m)
+    }
+    let perm_udpate_ts = error.response.headers['perm-update-ts'];
+    if (perm_udpate_ts && perm_udpate_ts > store.state.user.permUpdateTS) {
+      store.commit('user/setPermUpdateTS', perm_udpate_ts);
+      store.dispatch('user/refreshPermissions');
     }
     if (error.response.status === 401) {
       store.commit("user/clearAll");
