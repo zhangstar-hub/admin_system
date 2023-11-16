@@ -14,5 +14,9 @@ django drf +vue+elememt + celery 后台管理系统
 	1. 权限管理系统
 	2. celery 分布式应用
 ### 3. 展示
-	![Example Image](pic/user.png)
-	![Example Image](./pic/user.png)
+![Example Image](pic/user.png)
+![Example Image](pic/role.png)
+![Example Image](pic/permission.png)
+![Example Image](pic/menu.png)
+![Example Image](pic/sms_send.png)
+![Example Image](pic/sms_stat.png)
