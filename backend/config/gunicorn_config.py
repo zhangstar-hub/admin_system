@@ -1,9 +1,9 @@
 import multiprocessing
 
-bind = '0.0.0.0:8000'
+bind = '0.0.0.0:8000'  // 绑定的端口
 workers = multiprocessing.cpu_count() * 2 + 1
 backlog = 512
-chdir = '/Users/zhangxingxing/admin_system/backend'
+chdir = '/Users/zhangxingxing/admin_system/backend'  // 文件路径
 timeout = 60
 max_requests = 1000
 worker_connections = 1000
