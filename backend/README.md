@@ -58,6 +58,5 @@
 ​		启动celery：sh celery.sh start
 
 3. 需要自己设置登录账号密码
-   
-      python manage.py createsuperuser
+   python manage.py createsuperuser
       
